@@ -33,7 +33,7 @@ exports.createProfile = async (req, res, next) => {
 
     res.json({ result: profile, message: "Created Profile" });
   } catch (error) {
-    console.error("CREATE PROFILE ERROR:", error); // 👈 สำคัญ
+    console.log("DATABASE_URL:", process.env.DATABASE_URL); // 👈 สำคัญ
     next(error);
   }
 };
