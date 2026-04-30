@@ -1,6 +1,24 @@
 const renderError = require("../utils/renderError");
 const prisma = require('../config/prisma')
 
+exports.readProfile = async (req, res, next) => {
+  try {
+    const { id } = req.user;
+
+    if (!id) {
+      return res.status(400).json({ message: "No user id" });
+    }
+
+    const profile = await prisma.profile.findUnique({
+      where: { clerkId: id },
+    });
+
+    res.json({ result: profile });
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.createProfile = async (req, res, next) => {
   try {
     const { firstname, lastname } = req.body;
