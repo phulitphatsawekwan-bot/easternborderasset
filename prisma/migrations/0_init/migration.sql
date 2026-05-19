@@ -13,7 +13,7 @@ CREATE TABLE "public"."Eastborder" (
     "public_id" TEXT NOT NULL,
     "category" TEXT NOT NULL,
     "type" TEXT NOT NULL,
-    "space" DOUBLE PRECISION NOT NULL,
+    "space" INTEGER NOT NULL,
     "bedroom" TEXT NOT NULL,
     "bathroom" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -21,17 +21,6 @@ CREATE TABLE "public"."Eastborder" (
     "profileId" TEXT NOT NULL,
 
     CONSTRAINT "Eastborder_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "public"."EastborderImage" (
-    "id" SERIAL NOT NULL,
-    "secure_url" TEXT NOT NULL,
-    "public_id" TEXT NOT NULL,
-    "eastborderId" INTEGER NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "EastborderImage_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -58,14 +47,19 @@ CREATE TABLE "public"."Profile" (
     CONSTRAINT "Profile_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "public"."easternborderasset@gmail.com" (
+    "id" BIGSERIAL NOT NULL,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "easternborderasset@gmail.com_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "Profile_clerkId_key" ON "public"."Profile"("clerkId" ASC);
 
 -- AddForeignKey
 ALTER TABLE "public"."Eastborder" ADD CONSTRAINT "Eastborder_profileId_fkey" FOREIGN KEY ("profileId") REFERENCES "public"."Profile"("clerkId") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "public"."EastborderImage" ADD CONSTRAINT "EastborderImage_eastborderId_fkey" FOREIGN KEY ("eastborderId") REFERENCES "public"."Eastborder"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "public"."Favorite" ADD CONSTRAINT "Favorite_eastborderId_fkey" FOREIGN KEY ("eastborderId") REFERENCES "public"."Eastborder"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
