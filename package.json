@@ -5,7 +5,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon server",
-    "postinstall": "prisma generate"
+    "migrate:new": "node prisma/new-migration.js",
+    "migrate:deploy": "prisma migrate deploy",
+    "postinstall": "prisma generate && node prisma/deploy-migrations.js"
   },
   "keywords": [],
   "author": "",

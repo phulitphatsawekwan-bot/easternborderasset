@@ -9,7 +9,8 @@ exports.listRealestate = async (req, res, next) => {
                 favorites: {
                     where: { profileId: id },
                     select: { id: true }
-                }
+                },
+                images: true
             }
         });
 
@@ -39,7 +40,8 @@ exports.readRealestate = async (req, res, next) => {
         const realestate = await prisma.eastborder.findFirst({
             where: {
                 id: Number(id),
-            }
+            },
+            include: { images: true }
         })
 
         res.json({ result: realestate })
@@ -52,8 +54,16 @@ exports.createRealestate = async (req, res, next) => {
     try {
         console.log(req.body)
         const { title, description, price,
-            category, type, space, bedroom, bathroom, lat, lng, image } = req.body
+            category, type, space, bedroom, bathroom, lat, lng, image, images } = req.body
         const { id } = req.user;
+
+        // Accept the new `images` gallery; fall back to the legacy single
+        // `image` so older clients keep working.
+        const gallery = (Array.isArray(images) && images.length > 0)
+            ? images
+            : (image ? [image] : []);
+        const cover = gallery[0];
+
         const realestate = await prisma.eastborder.create({
             data: {
                 title: title,
@@ -66,10 +76,17 @@ exports.createRealestate = async (req, res, next) => {
                 bathroom: bathroom,
                 lat: lat,
                 lng: lng,
-                public_id: image.public_id,
-                secure_url: image.secure_url,
+                public_id: cover.public_id,
+                secure_url: cover.secure_url,
                 profileId: id,
-            }
+                images: {
+                    create: gallery.map((img) => ({
+                        public_id: img.public_id,
+                        secure_url: img.secure_url,
+                    })),
+                },
+            },
+            include: { images: true },
         })
 
         res.json({ message: "Create Real Estate Successfully!!!", result: realestate })
@@ -136,7 +153,7 @@ exports.listFavorites = async (req, res, next) => {
         const { id } = req.user;
         const favorites = await prisma.favorite.findMany({
             where: { profileId: id },
-            include: { eastborder: true }
+            include: { eastborder: { include: { images: true } } }
         })
 
         const favoriteWithLike = favorites.map((item) => {
@@ -203,7 +220,8 @@ exports.filterRealestate = async (req, res, next) => {
                 favorites: {
                     where: { profileId: req.user?.id },
                     select: { id: true }
-                }
+                },
+                images: true
             }
         });
 
