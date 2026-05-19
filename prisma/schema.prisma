@@ -38,7 +38,7 @@ model Eastborder {
   public_id   String
   category    String
   type        String
-  space       Int
+  space       Float
   bedroom     String
   bathroom    String
   createdAt   DateTime   @default(now())
@@ -46,6 +46,19 @@ model Eastborder {
   profile     Profile    @relation(fields: [profileId], references: [clerkId])
   profileId   String
   favorites   Favorite[]
+  // Gallery (up to 10 — the cap is enforced in the app/zod layer).
+  // secure_url/public_id above stay as the cover image (images[0]) for
+  // backward compatibility with existing reads.
+  images      EastborderImage[]
+}
+
+model EastborderImage {
+  id           Int        @id @default(autoincrement())
+  secure_url   String
+  public_id    String
+  eastborder   Eastborder @relation(fields: [eastborderId], references: [id], onDelete: Cascade)
+  eastborderId Int
+  createdAt    DateTime   @default(now())
 }
 
 model Favorite {
